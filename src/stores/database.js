@@ -15,6 +15,7 @@ export const useDb = defineStore('database', {
       collection:'items'
     }
   },
+  // Um comentário
   getters: {
     doubleCount: (state) => state.counter * 2,
   },

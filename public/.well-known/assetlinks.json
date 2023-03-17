@@ -1,0 +1,6 @@
+[{
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target" : { "namespace": "android_app", "package_name": "br.com.sweetcode.sweet-list-app.twa",
+                     "sha256_cert_fingerprints": ["54:76:A6:0D:8A:65:75:7E:62:BE:7A:1D:6D:BA:03:7E:96:DD:24:46:7D:83:F1:68:AC:DE:18:DE:24:F2:B4:BD"] }
+      }
+]

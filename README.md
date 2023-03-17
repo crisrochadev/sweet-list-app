@@ -1,4 +1,4 @@
-# Sweet List (sweet-list-app)
+# Lista de Compras (sweet-list-app)
 
 Lista de Compras
 
@@ -21,4 +21,4 @@ quasar build
 ```
 
 ### Customize the configuration
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
+See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js).

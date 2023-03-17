@@ -30,43 +30,34 @@
         </q-item-section>
       </q-item>
     </q-card>
-    <q-table
-      :rows="rows"
-      :columns="columns"
-      row-key="item"
-      selection="multiple"
-      v-model:selected="selected"
-      square
-      flat
-      hide-header
-      hide-bottom
-      virtual-scroll
-      separator="horizontal"
-      bordered
+    <q-list separator
     >
-      <template v-slot:body="props">
-        <q-tr :props="props">
-          <q-td>
+
+
+    <!-- milionarios  222-->
+        <q-item v-for="row in rows" :key="row.key">
+          <q-item-section avatar>
             <q-checkbox
               dense
-              v-model="props.selected"
+              v-model="row.added"
               checked-icon="remove"
               unchecked-icon="add"
               @click="
                 () => {
-                  updateItem(props.row.key, 'added', {
+                  updateItem(row.key, 'added', {
                     set: () => {
                       return false;
                     },
-                    value: !props.selected,
+                    value: row.added,
                   });
                 }
               "
             />
-          </q-td>
-          <q-td key="item" :props="props">
-            {{ props.row.item }}
-            <q-popup-edit v-model="props.row.item" v-slot="scope">
+          </q-item-section>
+           <q-item-section>
+            <q-item-label style="font-weight:bold;" class="text-primary text-md">
+              {{ row.item }}
+            <q-popup-edit v-model="row.item" v-slot="scope">
               <q-input
                 autofocus
                 dense
@@ -89,16 +80,17 @@
                     color="positive"
                     icon="check_circle"
                     @click.stop.prevent="
-                      updateItem(props.row.key, 'item', scope)
+                      updateItem(row.key, 'item', scope)
                     "
                   />
                 </template>
               </q-input>
             </q-popup-edit>
-          </q-td>
-          <q-td key="quantity" :props="props">
-            {{ props.row.quantity }}
-            <q-popup-edit v-model="props.row.quantity" v-slot="scope">
+            </q-item-label>
+            <q-item-label caption style="display:grid;justify-content: space-between;grid-template-columns:repeat(3,1fr)">
+              <span >
+                {{ row.quantity }}
+            <q-popup-edit v-model="row.quantity" v-slot="scope">
               <q-input
                 autofocus
                 dense
@@ -122,12 +114,65 @@
                     color="positive"
                     icon="check_circle"
                     @click.stop.prevent="
-                      updateItem(props.row.key, 'quantity', scope)
+                      updateItem(row.key, 'quantity', scope)
                     "
                   />
                 </template>
               </q-input>
             </q-popup-edit>
+              </span>
+              <span key="price" :props="props">
+            R$ {{ row.price }}
+            <q-popup-edit v-model="row.price" v-slot="scope">
+              <q-input
+                autofocus
+                dense
+                prefix="R$"
+                v-model="scope.value"
+                :model-value="scope.value"
+                hint="Valor do Item"
+                type="number"
+              >
+                <template v-slot:after>
+                  <q-btn
+                    flat
+                    dense
+                    color="negative"
+                    icon="cancel"
+                    @click.stop.prevent="scope.cancel"
+                  />
+
+                  <q-btn
+                    flat
+                    dense
+                    color="positive"
+                    icon="check_circle"
+                    @click.stop.prevent="
+                      updateItem(row.key, 'price', scope)
+                    "
+                  />
+                </template>
+              </q-input>
+            </q-popup-edit>
+          </span>
+          <span>
+            R$ {{ row.price * row.quantity }}
+          </span>
+            </q-item-label>
+          </q-item-section>
+          <q-item-section avatar>
+              <q-btn
+              icon="fa-solid fa-trash"
+              dense
+              round
+              flat
+              color="red-8"
+              size="sm"
+              @click="deleteThisItem(row.key)"
+            />
+          </q-item-section>
+         <!-- <q-td key="quantity" :props="props">
+
           </q-td>
           <q-td key="price" :props="props">
             R$ {{ props.row.price }}
@@ -176,10 +221,10 @@
               size="sm"
               @click="deleteThisItem(props.row.key)"
             />
-          </q-td>
-        </q-tr>
-      </template>
-    </q-table>
+          </q-td> -->
+        </q-item>
+
+    </q-list>
   </q-page>
 </template>
 
@@ -196,7 +241,7 @@ const columns = [
     field: (row) => row.item,
     format: (val) => `${val}`,
     sortable: true,
-    style: "width: 100%",
+    style: "width: calc(100% - 140px)",
   },
   {
     name: "quantity",
@@ -239,9 +284,13 @@ export default defineComponent({
   data() {
     const db = useDb();
     const $q = useQuasar();
+
     return {
       db,
       $q,
+      pagination: {
+        rowsPerPage: 0,
+      },
       columns,
       selected: [],
     };
@@ -270,13 +319,13 @@ export default defineComponent({
         this.$q.notify({
           message: "Deletado com sucesso!",
           color: "accent",
-          icon:'delete'
+          icon: "delete",
         });
       else
         this.$q.notify({
           message: "Houve um erro, não deletado!",
           color: "negative",
-          icon:'error'
+          icon: "error",
         });
     },
     async updateItem(key, item, data) {
@@ -294,7 +343,7 @@ export default defineComponent({
           this.$q.notify({
             message: "Houve um erro, não atualizado!",
             color: "negative",
-            icon:'error'
+            icon: "error",
           });
         data.set();
       }
